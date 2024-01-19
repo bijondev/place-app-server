@@ -1,8 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 const HttpError = require('./models/http-error')
 const placesRoutes = require('./routes/places-routes');
 const usersRoutes = require('./routes/users-routes');
+
+const mongo_url = "mongodb+srv://bijonbairagi:qymMNsfgir4iXQmt@mern-course.ice0zln.mongodb.net/mern_places?retryWrites=true&w=majority";
 
 const app = express();
 
@@ -24,4 +27,11 @@ app.use((error, req, res, next) => {
         .json({ message: error.message || 'An unknown error occurred' });
 });
 
-app.listen(5000);
+mongoose.connect(mongo_url)
+    .then(() => {
+        app.listen(5000);
+    })
+    .catch(error => {
+        console.log(error);
+    });
+
