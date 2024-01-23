@@ -3,14 +3,6 @@ const User = require('../models/user');
 const { validationResult } = require('express-validator');
 const HttpError = require('../models/http-error');
 
-const DUMMY_USERS = [
-    {
-        id: 'u1',
-        name: "Bijon Krishna Bairagi",
-        email: "bijon@gmail.com",
-        password: "123456"
-    }
-]
 
 const getUsers = async (req, res, next) => {
     let users;
@@ -47,7 +39,7 @@ const signup = async (req, res, next) => {
     const createUser = new User({
         name,
         email,
-        image: 'https://picsum.photos/id/250/700/500',
+        image: req.file.path,
         password,
         places: []
     });
@@ -69,16 +61,26 @@ const login = async (req, res, next) => {
 
     try {
         existingUser = await User.findOne({ email: email });
-    }
-    catch (error) {
-        return next(new HttpError(error, 500));
+    } catch (err) {
+        const error = new HttpError(
+            'Loggin in failed, please try again later.',
+            500
+        );
+        return next(error);
     }
 
     if (!existingUser || existingUser.password !== password) {
-        return next(new HttpError("Invalid credentials, could not log you in.", 500));
+        const error = new HttpError(
+            'Invalid credentials, could not log you in.',
+            401
+        );
+        return next(error);
     }
 
-    res.json({ message: "Logged in!" });
+    res.json({
+        message: 'Logged in!',
+        user: existingUser.toObject({ getters: true })
+    });
 };
 
 exports.getUsers = getUsers
