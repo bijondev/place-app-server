@@ -1,5 +1,5 @@
 const { v4: uuid } = require('uuid');
-const { bcrypt } = require('bcryptjs');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const { validationResult } = require('express-validator');
@@ -43,6 +43,7 @@ const signup = async (req, res, next) => {
         hashedPassword = await bcrypt.hash(password, 12);
     }
     catch (error) {
+        console.log("signup : ", error);
         return next(new HttpError("Could not create user, please try again.", 500));
     }
 
